@@ -1,7 +1,25 @@
 #include "FormNetwork.h"
 
+typedef struct {
+	float frequency;
+	float interval;
+	void (*func)(void);
+} Task;
+
+Task booper;
+void checkTask(Task *t, float delta);
+
 void game();
 void exitLoop(void *p, float val);
+void playBoop();
+
+float deltaTime() {
+	static double lastFrame = 0;
+	double currentFrame = glfwGetTime();
+	float elapsed = (currentFrame - lastFrame);// * 1000.0;
+	lastFrame = currentFrame;
+	return elapsed;
+}
 
 Sound *boop = 0;
 
@@ -14,20 +32,28 @@ int main(int args, char **argv) {
 
 	boop = processAudioFile("boop.wav");
 	boop->loop = false;
+	booper.frequency = 1;
+	booper.interval = 0;
+	booper.func = playBoop;
 	FormLoop(game);
 	exitGame();
 }
 
-int timer = 0;
-int frequency = 30;
+void playBoop() {
+	playAudio(boop);
+}
+
+void checkTask(Task *t, float delta) {
+	t->interval += delta;
+	if (t->interval >= (1.0 / t->frequency)) {
+		t->func();
+		t->interval -= (1.0) / t->frequency;
+	}
+}
 
 void game() {
-	if (timer > frequency) {
-		playAudio(boop);
-		timer = 0;
-	} else {
-		timer++;
-	}
+	float delta = deltaTime();
+	checkTask(&booper, delta);
 }
 
 void exitLoop(void *p, float val) {

@@ -26450,8 +26450,8 @@ sf_get_chunk_data (const SF_CHUNK_ITERATOR * it, SF_CHUNK_INFO * chunk_info) ;
 typedef struct Sound {
  char *file;
  float *buff;
- int reads;
- int len;
+ long totalFrames;
+ long readFrames;
  bool loop;
  int volume;
 } Sound;
