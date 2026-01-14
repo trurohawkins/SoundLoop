@@ -32,7 +32,7 @@ int main(int args, char **argv) {
 
 	boop = processAudioFile("boop.wav");
 	boop->loop = false;
-	booper.frequency = 1;
+	booper.frequency = 12;
 	booper.interval = 0;
 	booper.func = playBoop;
 	FormLoop(game);
@@ -45,9 +45,13 @@ void playBoop() {
 
 void checkTask(Task *t, float delta) {
 	t->interval += delta;
-	if (t->interval >= (1.0 / t->frequency)) {
-		t->func();
-		t->interval -= (1.0) / t->frequency;
+	float frequency = 1.0 / t->frequency;
+	int compound = t->interval / frequency;
+	for (int i = 0; i < compound; i++) {
+		if (t->interval >= frequency) {
+			t->func();
+			t->interval -= frequency;
+		}
 	}
 }
 
